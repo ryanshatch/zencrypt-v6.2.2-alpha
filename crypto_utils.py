@@ -15,6 +15,7 @@ from typing import List, Tuple, Generator
 import threading
 from dataclasses import dataclass
 from merklelib import MerkleTree
+from io import BytesIO, IOBase
 
 # Constants
 CHUNK_SIZE = 2 * 1024 * 1024  # 2MB chunks for parallel processing
@@ -91,13 +92,21 @@ class Argon2Handler:
 
 class ParallelFileProcessor:
     """Handles parallel processing of large files"""
+    CHUNK_SIZE = 2 * 1024 * 1024  # 2MB chunks
+    
     def __init__(self, num_workers: int = None):
         self.num_workers = num_workers or os.cpu_count()
         self.chunk_queue = CryptoQueue()
         self.merkle_tree = None
 
-    def process_file_parallel(self, input_path: str, processor_func, 
-                            use_processes: bool = False) -> bytes:
+    def process_file_parallel(self, file_obj, processor_func, use_processes: bool = False) -> bytes:
+        """Process a file in parallel chunks
+        
+        Args:
+            file_obj: A file-like object (can be Flask FileStorage or path string)
+            processor_func: Function to process each chunk
+            use_processes: Whether to use multiprocessing
+        """
         chunk_metadata = []
         
         # Split file into chunks and process
@@ -106,7 +115,7 @@ class ParallelFileProcessor:
             
             # Submit chunks for processing
             futures = []
-            for chunk_index, chunk in enumerate(self._read_chunks(input_path)):
+            for chunk_index, chunk in enumerate(self._read_chunks(file_obj)):
                 future = executor.submit(processor_func, chunk)
                 futures.append((chunk_index, future))
             
@@ -115,7 +124,6 @@ class ParallelFileProcessor:
                 result = future.result()
                 self.chunk_queue.store_result(chunk_index, result)
                 
-                # Store metadata for Merkle tree
                 metadata = ChunkMetadata(
                     index=chunk_index,
                     hash=hash(result),
@@ -129,16 +137,28 @@ class ParallelFileProcessor:
             for meta in chunk_metadata
         ])
         
-        # Combine results
         return b''.join(self.chunk_queue.get_ordered_results())
 
-    def _read_chunks(self, file_path: str) -> Generator[bytes, None, None]:
-        with open(file_path, 'rb') as f:
+    def _read_chunks(self, file_obj) -> Generator[bytes, None, None]:
+        """Read file in chunks
+        
+        Args:
+            file_obj: File-like object (BytesIO, FileStorage, or path string)
+        """
+        if isinstance(file_obj, str):
+            with open(file_obj, 'rb') as f:
+                while True:
+                    chunk = f.read(self.CHUNK_SIZE)
+                    if not chunk:
+                        break
+                    yield chunk
+        elif isinstance(file_obj, (BytesIO, IOBase)):
             while True:
-                chunk = f.read(CHUNK_SIZE)
+                chunk = file_obj.read(self.CHUNK_SIZE)
                 if not chunk:
                     break
                 yield chunk
+            file_obj.seek(0)
 
     def verify_chunk_integrity(self, chunk_metadata: ChunkMetadata) -> bool:
         """Verify a chunk's integrity using the Merkle tree"""

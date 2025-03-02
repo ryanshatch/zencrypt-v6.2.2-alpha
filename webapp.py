@@ -4,9 +4,9 @@
 * Developed by: Ryan Hatch         |********************************************************
 * Date: August 10th 2022           |********************************************************
 * Last Updated: Febuary 13th 2025  |********************************************************
-* Version: 6.2-A                   |********************************************************
+* Version: 6.2.2-A2                   |*****************************************************
 ********************************************************************************************
-*****************************#*| Zencrypt v6.2-A |******************************************
+*****************************#*| Zencrypt v6.2.2-A2 |***************************************
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ********************************#* Description: |*******************************************
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
@@ -28,6 +28,7 @@
 ********************************************************************************************
 """
 
+import sys
 from models import db, User, Hash, EncryptedText, Key, PGPKey  # Add PGPKey here
 #* Importing the required libraries for the webapp
 from flask import Flask, request, render_template_string, redirect, url_for, session, jsonify, send_from_directory
@@ -45,8 +46,8 @@ from datetime import timedelta
 from dotenv import load_dotenv
 from utils import generate_pgp_keypair, pgp_encrypt_message, pgp_decrypt_message
 from flask_migrate import Migrate
-from crypto_utils import ECCHandler, Argon2Handler, ParallelFileProcessor
-from config import config
+from io import BytesIO
+from flask import make_response
 
 # #* ---------------------- | Environment & Database Configuration | ---------------------- #
 
@@ -55,9 +56,6 @@ load_dotenv()
 
 # Flask Configuration and JWT Manager
 app = Flask(__name__)
-config_name = os.getenv('FLASK_ENV', 'default')
-app.config.from_object(config[config_name])
-config[config_name].init_app(app)
 
 # SQLite Configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -85,7 +83,7 @@ jwt = JWTManager(app)
 
 # #* ---------------------- | Key Management | ---------------------- #
 def initialize_key(user_id):
-    """Initialize or retrieve encryption key for a user"""
+    #* Initialize or retrieve encryption key for a user
     # Check for existing active key
     key = Key.query.filter_by(user_id=user_id, active=True).first()
     
@@ -112,12 +110,12 @@ def initialize_key(user_id):
         return Fernet.generate_key()
 
 def get_cipher_suite(user_id):
-    """Get Fernet cipher suite for a user"""
+    #* Get Fernet cipher suite for a user
     key = initialize_key(user_id)
     return Fernet(key)
 
 def rotate_key(user_id):
-    """Rotate encryption key for a user"""
+    #*Rotate encryption key for a user
     try:
         # Deactivate old key
         old_key = Key.query.filter_by(user_id=user_id, active=True).first()
@@ -135,30 +133,26 @@ def rotate_key(user_id):
         db.session.commit()
         
         return new_key
+    
     except Exception as e:
         db.session.rollback()
         print(f"Error rotating key: {e}")
         return None
 
 def initialize_ecc():
-    """Initialize ECC handler for the application"""
-    return ECCHandler(curve=app.config['ECC_CURVE'])
+    #* Initialize ECC handler for the application
+    from crypto_utils import ECCHandler
+    return ECCHandler()
 
 def initialize_argon2():
-    """Initialize Argon2 handler for the application"""
-    return Argon2Handler(
-        time_cost=app.config['ARGON2_TIME_COST'],
-        memory_cost=app.config['ARGON2_MEMORY_COST'],
-        parallelism=app.config['ARGON2_PARALLELISM']
-    )
+    #* Initialize Argon2 handler for the application
+    from crypto_utils import Argon2Handler
+    return Argon2Handler()
 
 def get_file_processor():
-    """Get configured file processor instance"""
-    return ParallelFileProcessor(
-        num_workers=app.config['MAX_WORKERS'],
-        chunk_size=app.config['CHUNK_SIZE'],
-        use_processes=app.config['USE_PROCESSES']
-    )
+    #* Get configured file processor instance
+    from crypto_utils import ParallelFileProcessor
+    return ParallelFileProcessor(num_workers=os.cpu_count())  # Only pass num_workers
 
 # #* ---------------------- | Styling and HTML for the Web-App | ---------------------- #
 
@@ -295,6 +289,26 @@ STYLE_TEMPLATE = """
         padding: 2rem 1rem;
         flex: 1;
     }
+    .output {
+        width: 95%;
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background: #2d2d2d;
+        border-radius: 5px;
+        border: 1px solid #444;
+        text-align: center;
+        white-space: pre-wrap;
+        word-break: break-all;
+        font-family: 'Consolas', monospace;
+    }
+    
+    .output-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 2rem;
+    }
     @media (max-width: 768px) {
         .container {
             width: 95%;
@@ -314,7 +328,7 @@ STYLE_TEMPLATE = """
     }
 """
 
-# Define header/banner separately as it's reused
+#* Define header and banner separately because its reused in different pages
 HEADER_TEMPLATE = """
     <div class="header">
         <div style="text-align: center; font-family: 'Helvetica', sans-serif; color: #999;">
@@ -327,7 +341,7 @@ HEADER_TEMPLATE = """
     </div>
 """
 
-# Main application template
+#* Main application template
 APP_TEMPLATE = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -352,25 +366,30 @@ APP_TEMPLATE = f"""
                 <div class="navbar-container">
                     <div class="navbar-brand" onclick="toggleMenu()">
                         ☰ Zencrypt
-                        <span style="font-size: 1.0rem;"></span>
                     </div>
                     <div class="navbar-menu" id="navMenu">
-                        <a href="/"><button>Generate Hash</button></a>
-                        <a href="/encrypt"><button>Encrypt Text</button></a>
-                        <a href="/decrypt"><button>Decrypt Text</button></a>
-                        <a href="/file"><button>Encode / Decode .txt Files</button></a>
-                        <a href="/pgp"><button>PGP Encryption</button></a>
-                        <a href="/advanced"><button>AAC & Argon2</button></a>
-                        <a href="/export-key"><button>Export Key</button></a>
-                        <a href="/import-key"><button>Import Key</button></a>
-                        <a href="/logout"><button>Logout</button></a>
+                        <div class="menu">
+                            <a href="/logout"><button>Logout</button></a>  
+                            <a href="/export-key"><button>Export Key</button></a>
+                            <a href="/import-key"><button>Import Key</button></a>
+                        </div>
+                        <div>
+                            <a href="/"><button>Generate Hash</button></a>
+                            <a href="/argon2"><button>Argon2</button></a>
+                            <a href="/encrypt"><button>Encrypt Text</button></a>
+                            <a href="/decrypt"><button>Decrypt Text</button></a>
+                            <a href="/file"><button>Encode Text Files</button></a>
+                            <a href="/pgp"><button>PGP</button></a>
+                        </div>
                     </div>
                 </div>
             </nav>
             <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 102, 255, 0), rgba(0, 102, 255, 0.75), rgba(0, 102, 255, 0));">
             {{{{ content | safe }}}}
             {{% if output %}}
-                <div class="output">{{{{ output }}}}</div>
+                <div class="output-container">
+                    <div class="output">{{{{ output }}}}</div>
+                </div>
             {{% endif %}}
         {{% else %}}
             <div class="auth-container">
@@ -380,13 +399,15 @@ APP_TEMPLATE = f"""
                 {{% endif %}}
                 <form method="POST" action="{{% if request.path == '/register' %}}/register{{% else %}}/login{{% endif %}}">
                     <input type="email" name="email" placeholder="Email" required>
+                    <br><br>
                     <input type="password" name="password" placeholder="Password" required>
+                    <br><br>
                     <button type="submit">{{% if request.path == '/register' %}}Register{{% else %}}Login{{% endif %}}</button>
                 </form>
                 {{% if request.path == '/register' %}}
-                    <p>Already have an account? <a href="/login">Login</a></p>
+                    <p><code>Already have an account? <a href="/login">Login</code></a></p>
                 {{% else %}}
-                    <p>Don't have an account? <a href="/register">Register</a></p>
+                    <p><code>Don't have an account? <a href="/register">Register</code></a></p>
                 {{% endif %}}
             </div>
             <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 102, 255, 0), rgba(0, 102, 255, 0.75), rgba(0, 102, 255, 0));">
@@ -402,30 +423,22 @@ APP_TEMPLATE = f"""
     </div>
     <script>
         function toggleMenu() {{
-            const menu = document.getElementById('navMenu');
+            var menu = document.getElementById('navMenu');
             menu.classList.toggle('active');
         }}
         
-        // Close menu when clicking outside
         document.addEventListener('click', function(event) {{
-            const menu = document.getElementById('navMenu');
-            const menuButton = document.querySelector('.navbar-brand');
+            var menu = document.getElementById('navMenu');
+            var brand = document.querySelector('.navbar-brand');
             
-            if (!menu.contains(event.target) && !menuButton.contains(event.target)) {{
+            if (!menu.contains(event.target) && !brand.contains(event.target)) {{
                 menu.classList.remove('active');
             }}
         }});
         
-        // Close menu when scrolling
-        let lastScroll = 0;
         window.addEventListener('scroll', function() {{
-            const menu = document.getElementById('navMenu');
-            const currentScroll = window.pageYOffset;
-            
-            if (currentScroll > lastScroll) {{
-                menu.classList.remove('active');
-            }}
-            lastScroll = currentScroll;
+            var menu = document.getElementById('navMenu');
+            menu.classList.remove('active');
         }});
     </script>
 </body>
@@ -456,7 +469,7 @@ def favicon():
 #* ---------------------- | Authentication Routes | ---------------------- #
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
+    if request.method == 'POST': 
         email = request.form.get('email')
         password = request.form.get('password')
         
@@ -525,7 +538,8 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-#* ---------------------- | Encryption & Decryption Routes | ---------------------- #
+#* ---------------------- | Hashing and Main Routes | ---------------------- #
+
 @app.route('/', methods=['GET', 'POST'])
 def hash_page():
     if not session.get('user_id'):
@@ -562,6 +576,8 @@ def hash_page():
                 output=f"SHA256 Hash:\n{hash_value}")
     
     return render_template_string(APP_TEMPLATE, content=content)
+
+#* ---------------------- | Encryption & Decryption Routes | ---------------------- #
 
 @app.route('/encrypt', methods=['GET', 'POST'])
 def encrypt_page():
@@ -639,6 +655,7 @@ def decrypt_page():
     return render_template_string(APP_TEMPLATE, content=content)
 
 #* ---------------------- | File Operations Route | ---------------------- #
+
 #* Route to the file operations page of the web-app with the file encryption/decryption function
 @app.route('/file', methods=['GET', 'POST'])
 def file_page():
@@ -714,13 +731,13 @@ def file_page():
                 encrypted = cipher_suite.encrypt(file_content)
                 return render_template_string(APP_TEMPLATE,
                     content=content,
-                    output=f"File encrypted successfully!\nEncrypted content:\n{base64.b64encode(encrypted).decode()}")
+                    output=f"{base64.b64encode(encrypted).decode()}")
             else:
                 try:
                     decrypted = cipher_suite.decrypt(base64.b64decode(file_content))
                     return render_template_string(APP_TEMPLATE,
                         content=content,
-                        output=f"File decrypted successfully!\nDecrypted content:\n{decrypted.decode()}")
+                        output=f"{decrypted.decode()}")
                 except Exception:
                     return render_template_string(APP_TEMPLATE,
                         content=content,
@@ -733,7 +750,9 @@ def file_page():
     
     return render_template_string(APP_TEMPLATE, content=content)
 
-@app.route('/export-key', methods=['GET', 'POST'])
+#* ---------------------- | Export / Import Keys Routes | ---------------------- #
+
+@app.route('/export-key')
 def export_key():
     if not session.get('user_id'):
         return redirect(url_for('login'))
@@ -741,7 +760,7 @@ def export_key():
     try:
         key = Key.query.filter_by(user_id=session['user_id'], active=True).first()
         if key:
-            key_name = request.args.get('key_name', 'zen_key')  # Default to 'zen_key' if no name provided
+            key_name = request.args.get('key_name', 'private')  # Default to 'zen_key' if no name provided
             response = app.response_class(
                 key.key_value,
                 mimetype='application/octet-stream',
@@ -794,6 +813,8 @@ def import_key():
     except Exception as e:
         db.session.rollback()
         return f"Error importing key: {str(e)}", 500
+    
+#* ---------------------- | PGP Operation Routes | ---------------------- #
 
 @app.route('/pgp', methods=['GET'])
 def pgp_page():
@@ -890,46 +911,144 @@ def pgp_decrypt():
             content="Decrypted message:<br><textarea readonly>%s</textarea>" % decrypted)
     except Exception as e:
         return f"Error decrypting message: {str(e)}", 500
-
-@app.route('/advanced', methods=['GET', 'POST'])
-@jwt_required()
-def advanced_crypto():
-    if request.method == 'POST':
-        operation = request.form.get('operation')
-        
-        if operation == 'ecc':
-            ecc = initialize_ecc()
-            private_key, public_key = ecc.generate_keypair()
-            # Store keys in session or database as needed
-            return jsonify({'status': 'ECC keys generated'})
-            
-        elif operation == 'argon2':
-            password = request.form.get('password')
-            argon2_handler = initialize_argon2()
-            hashed = argon2_handler.hash_password(password)
-            return jsonify({'hash': hashed})
-            
-        elif operation == 'parallel_encrypt':
-            if 'file' not in request.files:
-                return jsonify({'error': 'No file provided'})
-                
-            file = request.files['file']
-            processor = ParallelFileProcessor()
-            
-            # Process file in parallel using current encryption method
-            def encrypt_chunk(chunk: bytes) -> bytes:
-                cipher_suite = get_cipher_suite(session['user_id'])
-                return cipher_suite.encrypt(chunk)
-                
-            encrypted = processor.process_file_parallel(file, encrypt_chunk)
-            return jsonify({'status': 'File encrypted', 'size': len(encrypted)})
     
-    return render_template_string(APP_TEMPLATE, 
-        content="Advanced Cryptography Options")
+#* ---------------------- | Argon2 Hashing Routes | ---------------------- #
 
-#<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-#* TRIFORCE ASCII ART BANNER FOR THE WEB-APP     <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-#<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+@app.route('/argon2', methods=['GET', 'POST'])
+def advanced_crypto():
+    
+    #* Handle advanced cryptographic operations
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+
+    # Add this HTML content for the advanced crypto page
+    content = """
+    <div class="form-container">
+        
+        <!-- ECC Section -->
+        <form method="POST" class="crypto-form">
+          <!--  <h3>ECC Key Generation</h3>  -->
+            <input type="hidden" name="operation" value="ecc">
+            <div class="button-wrapper">
+                <button type="submit">Generate Keys</button>
+            </div>
+        </form>
+
+        <!-- Argon2 Section -->
+        <form method="POST" class="crypto-form">
+          <!--  <h3>Argon2 Hashing</h3>  -->
+            <input type="hidden" name="operation" value="argon2">
+            <input type="password" name="password" placeholder="Enter text to hash" required>
+            <div class="button-wrapper">
+                <button type="submit">Generate Hash</button>
+            </div>
+        </form>
+
+        <!-- Parallel File Processing 
+        <form method="POST" class="crypto-form" enctype="multipart/form-data">
+            <h3>Large File Encryption</h3>
+            <input type="hidden" name="operation" value="parallel_encrypt">
+            <div style="margin: 20px 0;">
+                <label for="file-upload" class="custom-file-upload" style="
+                    display: inline-block;
+                    padding: 10px 20px;
+                    background: #2d2d2d;
+                    color: #fff;
+                    border: 1px solid #444;
+                    border-radius: 5px;
+                    cursor: pointer;">
+                    Choose Large File
+                </label>
+                <input id="file-upload" type="file" name="file" required style="display: none;">
+            </div>
+            <div class="button-wrapper">
+                <button type="submit">Process Large File</button>
+            </div>
+        </form>  -->
+    </div>
+    <style>
+        .crypto-form {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .crypto-form h3 {
+            margin-top: 0;
+            color: #fff;
+        }
+    </style>
+    """
+    
+    if request.method == 'POST':
+        try:
+            operation = request.form.get('operation')
+            
+            if operation == 'ecc':
+                ecc = initialize_ecc()
+                private_key, public_key = ecc.generate_keypair()
+                return render_template_string(APP_TEMPLATE,
+                    content=content,
+                    output="ECC keys generated successfully!")
+                
+            elif operation == 'argon2':
+                password = request.form.get('password')
+                argon2_handler = initialize_argon2()
+                hashed = argon2_handler.hash_password(password)
+                return render_template_string(APP_TEMPLATE,
+                    content=content,
+                    output=f"{hashed}")
+                    
+        except Exception as e:
+            return render_template_string(APP_TEMPLATE,
+                content=content,
+                output=f"Error processing operation: {str(e)}")
+    
+    return render_template_string(APP_TEMPLATE, content=content)
+
+#* Implementing parallel encryption for large files
+            
+    #//     elif operation == 'parallel_encrypt':
+    #//         if 'file' not in request.files:
+    #//             return render_template_string(APP_TEMPLATE,
+    #//                 content=content,
+    #//                 output="No file provided")
+                
+    #//         file = request.files['file']
+    #//         if not file:
+    #//             return render_template_string(APP_TEMPLATE,
+    #//                 content=content,
+    #//                 output="Invalid file")
+
+    #//         try:
+    #//             # Read the entire file into memory
+    #//             file_data = file.read()
+    #//             processor = get_file_processor()
+    #//             cipher_suite = get_cipher_suite(session['user_id'])
+                
+    #//             def encrypt_chunk(chunk: bytes) -> bytes:
+    #//                 return cipher_suite.encrypt(chunk)
+                
+    #//             # Create a BytesIO object from the file data
+    #//             file_obj = BytesIO(file_data)
+    #//             encrypted = processor.process_file_parallel(file_obj, encrypt_chunk)
+                
+    #//             # Create response with encrypted file
+    #//             response = make_response(encrypted)
+    #//             response.headers['Content-Type'] = 'application/octet-stream'
+    #//             response.headers['Content-Disposition'] = f'attachment; filename=encrypted_{file.filename}'
+    #//             return response
+                
+    #//         except Exception as e:
+    #//             return render_template_string(APP_TEMPLATE,
+    #//                 content=content,
+    #//                 output=f"Error processing file: {str(e)}")
+    
+    #// return render_template_string(APP_TEMPLATE, content=content)
+
+#<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+#* TRIFORCE ASCII ART BANNER FOR THE WEB-APP     <><><><><><><><><><><><><><><><><>
+#<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # #* ---------------------- | Triforce ASCII Art Banner | ---------------------- #
 BOLD = '\033[1m'
 END = '\033[0m'
@@ -946,7 +1065,8 @@ ASCII_BANNER = f"""
                     /__\\/__\\/__\\/__\
                     
 """
-#* Function to print the Zencrypt banner in the console along with Zencrypt whitepapers and ePortfolio links to my website.
+#* Function to print the Zencrypt banner in the console 
+# with the Zencrypt whitepapers and ePortfolio.
 def print_startup_banner():
     print(ASCII_BANNER)
     print(f"{BOLD}Zencrypt Web-App{END} - Developed And Owned Entirely By Ryanshatch{END}\n")
@@ -961,8 +1081,8 @@ if __name__ == '__main__':
     if os.getenv('FLASK_ENV') == 'production':
         if not os.getenv('SECRET_KEY'):
             print("Please set the SECRET_KEY environment variable")
-            exit(1) # Exit if SECRET_KEY is not set
-        initialize_key() # Initialize the encryption key for the user
-        app.run(host='0.0.0.0', port=5000, debug=False)  # Let Nginx handle SSL
+            sys.exit(1)                                         # Exit if SECRET_KEY is not set
+        initialize_key()                                    # Initialize the encryption key for the user
+        app.run(host='0.0.0.0', port=5000, debug=False)     # Let Nginx handle SSL
     else:
         app.run(host='0.0.0.0', port=5000, debug=False)

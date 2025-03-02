@@ -6,13 +6,6 @@
 * Last Updated: Febuary 13th 2025  |********************************************************
 * Version: v6.2-A                  |********************************************************
 ********************************************************************************************
-********************************#* Description: |*******************************************
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-*              Zencrypt Web-App is a Flask application that can be used to:                *
-*       - Generate hashes: using SHA256 hashing algorithm, with an optional salt value.    *
-*       - Encrypt text and files: using Fernet symmetric encryption algorithm.             *
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-********************************************************************************************
 """
 
 #* Import libraries for the web-app
@@ -27,8 +20,12 @@ import hashlib
 import os
 import base64
 
+# Replace collections.Iterable with collections.abc.Iterable
+from collections.abc import Iterable
+
 #* Define the key file for the encryption
-KEY_FILE = "zen.key"                        # The private key is stored in a file called "private.key"
+KEY_FILE = "zen-private.key"                        # The private key is stored in a file called "private.key"
+#//KEY_FILE = "zen.key"                        # The private key is stored in a file called "private.key"
 
 #* Initialize the key for encryption
 def initialize_key():

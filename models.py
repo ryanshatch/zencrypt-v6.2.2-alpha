@@ -23,7 +23,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from dataclasses import dataclass
 
-__all__ = ['db', 'User', 'Hash', 'EncryptedText', 'Key', 'PGPKey']
+__all__ = ['db', 'User', 'Hash', 'EncryptedText', 'Key', 'PGPKey', 'ECCKey', 'ProcessingJob']
 
 #* ---------------------- | Database Models | --------------------- *#
 db = SQLAlchemy()
