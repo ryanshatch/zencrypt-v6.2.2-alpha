@@ -1,17 +1,69 @@
+# Exported from Render on 2025-04-27T00:36:56Z
 services:
-  - type: web
-    name: zencrypt
-    env: python
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: gunicorn webapp:app
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.11
-      - key: MONGO_URI
-        sync: false
-      - key: JWT_SECRET_KEY
-        generateValue: true
-    services:
-      - type: mongodb
-        name: zencrypt-db
-        ipAllowList: []
+- type: web
+  name: zencrypt
+  runtime: python
+  repo: https://github.com/ryanshatch/zencrypt-v6.2.2-alpha
+  branch: alpha2
+  plan: free
+  envVars:
+  - key: Private_Key
+    sync: false
+  - key: Certificate
+    sync: false
+  - key: CHUNK_SIZE
+    sync: false
+  - key: MAX_WORKERS
+    sync: false
+  - key: SQLALCHEMY_DATABASE_URI
+    sync: false
+  - key: PYTHON_VERSION
+    sync: false
+  - key: KEY_FILE
+    sync: false
+  - key: SECRET_KEY
+    sync: false
+  - key: JWT_SECRET_KEY
+    sync: false
+  - key: FLASK_ENV
+    sync: false
+  - key: FLASK_APP
+    sync: false
+  - key: DATABASE_PATH
+    sync: false
+  - key: KEY_FILE_PATH
+    sync: false
+  - key: KEY_FILE_PATH
+    sync: false
+  - key: JWT_SECRET_KEY
+    sync: false
+  - key: SECRET_KEY
+    sync: false
+  region: ohio
+  buildCommand: python -m venv zenven && pip install --upgrade pip && pip install
+    -r requirements.txt
+  startCommand: gunicorn webapp:app
+  domains:
+  - www.zencrypt.app
+  - zencrypt.app
+  autoDeploy: false
+version: "1"
+
+# Old version
+# services:
+#   - type: web
+#     name: zencrypt
+#     env: python
+#     buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+#     startCommand: gunicorn webapp:app
+#     envVars:
+#       - key: PYTHON_VERSION
+#         value: 3.11.11
+#       - key: MONGO_URI
+#         sync: false
+#       - key: JWT_SECRET_KEY
+#         generateValue: true
+#     services:
+#       - type: mongodb
+#         name: zencrypt-db
+#         ipAllowList: []
