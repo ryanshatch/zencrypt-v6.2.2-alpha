@@ -3,7 +3,7 @@ services:
 - type: web
   name: zencrypt
   runtime: python
-  repo: https://github.com/ryanshatch/zencrypt-v6.2.2-alpha
+  repo: https://github.com/imaclone.x/zencrypt-v6.2.2-alpha
   branch: alpha2
   plan: free
   envVars:

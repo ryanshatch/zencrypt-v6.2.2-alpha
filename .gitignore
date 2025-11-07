@@ -1,0 +1,36 @@
+# Ignore environment variable files
+.env
+.env.*
+# Ignore Node Modules
+node_modules/
+# Ignore Migration files
+migrations/
+# Ignore database files
+*.db
+*.sqlite3
+.sql
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+# Ignore virtual environment directories
+venv/
+env/
+zenvenv/
+# Ignore IDE specific files
+.vscode/
+.idea/
+# Ignore log files
+*.log
+# Ignore Snyk test reports
+security testing/Snyk tests/snyk-report.json
+# Ignore node modules
+static/js/node_modules/
+# Ignore build files
+build/
+dist/
+# Ignore coverage reports
+coverage/
+# Ignore Keypair files
+*.json
+.Key
+.sqbpro
