@@ -22,9 +22,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from dataclasses import dataclass
-from db import db
 
-__all__ = ['db', 'User', 'Hash', 'EncryptedText', 'Key', 'PGPKey', 'Wallet', 'Usage', 'Invoice']
+__all__ = ['db', 'User', 'Hash', 'EncryptedText', 'Key', 'PGPKey']
+
 #* ---------------------- | Database Models | --------------------- *#
 db = SQLAlchemy()
 
@@ -89,25 +89,3 @@ class ProcessingJob(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     merkle_root = db.Column(db.String(64))
     chunk_count = db.Column(db.Integer)
-
-#* ---------------------- | Solana Dapp Model | ------------------------- *#
-class Wallet(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    address = db.Column(db.String(64), unique=True, nullable=False)
-    plan = db.Column(db.String(16), default="free")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-class Usage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    wallet_id = db.Column(db.Integer, db.ForeignKey("wallet.id"))
-    op = db.Column(db.String(16))   # "encrypt"|"decrypt"
-    bytes = db.Column(db.Integer)
-    ts = db.Column(db.DateTime, default=datetime.utcnow)
-
-class Invoice(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    wallet_id = db.Column(db.Integer, db.ForeignKey("wallet.id"))
-    amount_lamports = db.Column(db.Integer)
-    reference = db.Column(db.String(88), unique=True)  # Solana Pay reference pubkey
-    status = db.Column(db.String(16), default="pending")
-    ts = db.Column(db.DateTime, default=datetime.utcnow)

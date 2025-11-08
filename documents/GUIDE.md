@@ -40,7 +40,7 @@ Zencrypt is a Flask-based web application focused on encryption, hashing, and se
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/imaclone.x/Zencrypt.git
+   git clone https://github.com/ryanshatch/Zencrypt.git
    cd Zencrypt
    ```
 
@@ -132,7 +132,7 @@ Zencrypt is a Flask-based web application focused on encryption, hashing, and se
 
 For detailed documentation and updates, visit:
 - Documentation: https://zencrypt.gitbook.io/zencrypt
-- Source Code: https://github.com/imaclone.x/zencrypt
+- Source Code: https://github.com/ryanshatch/zencrypt
 - Web-App: https://zencrypt.app
 
-For support or questions, contact: imaclone.x@gmail.com
+For support or questions, contact: ryanshatch@gmail.com

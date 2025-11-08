@@ -39,7 +39,7 @@ The following versions of Zencrypt are currently supported with security updates
 ## Reporting a Vulnerability
 
 ### How to Report
-1. Email: imaclone.x@gmail.com
+1. Email: ryanshatch@gmail.com
 2. Include version number and steps to reproduce
 3. Provide impact assessment if possible
 

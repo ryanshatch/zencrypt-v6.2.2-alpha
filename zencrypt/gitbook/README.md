@@ -17,7 +17,7 @@ Welcome to Zencrypts Whitepapers! Here you'll find all the documentation you nee
 
 Feeling like an eager beaver? Jump in to the Github and skip all of the technical non-sense:
 
-{% embed url="https://github.com/imaclone.x/zencrypt" %}
+{% embed url="https://github.com/ryanshatch/zencrypt" %}
 
 ## Want to read the documentation and white papers?
 

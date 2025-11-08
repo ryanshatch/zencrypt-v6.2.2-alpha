@@ -9,23 +9,10 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Flask configuration
 class Config:
     # Basic Flask config
-    # SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
+    SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         f'sqlite:///{os.path.join(BASE_DIR, "zencrypt.db")}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev")
-    JWT_SECRET = os.environ.get("JWT_SECRET_KEY", "devjwt")
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///zencrypt.db")
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    # Solana/Web3
-    RPC_URL = os.environ.get("RPC_URL", "https://api.devnet.solana.com")
-    GATING_MINT = os.environ.get("GATING_MINT", "")  # NFT or SFT mint for access
-    PICKET_PUBLIC = os.environ.get("PICKET_PUBLIC_KEY", "")
-    PICKET_SECRET = os.environ.get("PICKET_SECRET_KEY", "")
-    HELIUS_API_KEY = os.environ.get("HELIUS_API_KEY", "")
-    # Solana Pay
-    MERCHANT_WALLET = os.environ.get("MERCHANT_WALLET", "")
     
     # File handling
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
