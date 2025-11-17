@@ -117,7 +117,7 @@
     <h2 id="installation">Installation</h2>
     <p> To install Zencrypt, you will need to follow these steps: </p>
     <ol>
-      <li>Clone the repository or download the source code with the command:<br><code>git clone https://github.com/ryanshatch/Zencrypt.git</code>. </li>
+      <li>Clone the repository or download the source code with the command:<br><code>git clone https://github.com/imaclone.x/Zencrypt.git</code>. </li>
         <li>Navigate to the project directory with the command: <code>cd Zencrypt</code>. </li>
         <li>First, you will need to install Python 3.7 or higher. You can download Python from the official website: <a href="https://www.python.org/downloads/">https://www.python.org/downloads/</a>. </li>
             <li>Next, you will need to install pip, the Python package manager. You can install pip by following the instructions on the official website: <a href="https://pip.pypa.io/en/stable/installation/">https://pip.pypa.io/en/stable/installation/</a>. </li>
@@ -135,19 +135,19 @@
     <h2 id="examples">Examples of CLI (v4-B1) Functionality:</h2>
     <h3 align="center">Hashing:</h3>
     <center>
-      <img alt="Hashing Example" src="https://github.com/ryanshatch/Zencrypt/blob/main/zencrypthash.png" style="width: 100%; height: 100%;" />
+      <img alt="Hashing Example" src="https://github.com/imaclone.x/Zencrypt/blob/main/zencrypthash.png" style="width: 100%; height: 100%;" />
     </center>
     <h3 align="center">Cipher:</h3>
     <center>
-      <img alt="Cipher Example" src="https://github.com/ryanshatch/Zencrypt/blob/main/zencrypt.PNG" style="width: 100%; height: 100%;" />
+      <img alt="Cipher Example" src="https://github.com/imaclone.x/Zencrypt/blob/main/zencrypt.PNG" style="width: 100%; height: 100%;" />
     </center>
     <h3 align="center">Encrypting Parsed Files:</h3>
     <center>
-      <img alt="Cipher Example" src="https://github.com/ryanshatch/Zencrypt/blob/main/encrypt.PNG" style="width: 100%; height: 50%;" />
+      <img alt="Cipher Example" src="https://github.com/imaclone.x/Zencrypt/blob/main/encrypt.PNG" style="width: 100%; height: 50%;" />
     </center>
         <h3 align="center">PGP Encryption:</h3>
     <center>
-      <img alt="Cipher Example" src="https://github.com/ryanshatch/Zencrypt/blob/main/pgpencryption.PNG" style="width: 100%; height: 50%;" />
+      <img alt="Cipher Example" src="https://github.com/imaclone.x/Zencrypt/blob/main/pgpencryption.PNG" style="width: 100%; height: 50%;" />
     </center>
     </p>
     <hr><br>
@@ -232,7 +232,7 @@
     <h2 align="center" id="liscense">Liscense</h2>
     <p> This software is the property of the copyright holder and is protected by copyright laws. All rights are reserved. The copyright holder grants no implied or express license for the use, copying, modification, distribution, or reproduction of this software, in whole or in part, without the prior written permission of the copyright holder. </p>
     <p> Any unauthorized use, copying, modification, distribution, or reproduction of this software, in whole or in part, is strictly prohibited and constitutes a violation of copyright law. Such unauthorized use may result in civil and/or criminal penalties, including but not limited to legal action and monetary damages. </p>
-    <p> To obtain permission for any use, copying, modification, distribution, or reproduction of this software, please contact the copyright holder at the following address: <code>ryanshatch@gmail.com</code>
+    <p> To obtain permission for any use, copying, modification, distribution, or reproduction of this software, please contact the copyright holder at the following address: <code>imaclone.x@gmail.com</code>
     </p>
     </p>
     <br>
@@ -244,6 +244,6 @@
   </body>
 </html><hr>
 <h2 align="center" id="contact">Contact</h2>
-<p align="center">For any inquiries or suggestions, please contact me at <a href="mailto:ryanshatch@gmail.com">ryanshatch@gmail.com</a>.
+<p align="center">For any inquiries or suggestions, please contact me at <a href="mailto:imaclone.x@gmail.com">imaclone.x@gmail.com</a>.
 </body>
 </html>

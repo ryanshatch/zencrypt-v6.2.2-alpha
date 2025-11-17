@@ -1,0 +1,14 @@
+{
+  "name": "Zencrypt Collection",
+  "symbol": "ZC",
+  "description": "A collection of 69 unique NFTs that grant access to the Zencrypt platform, giving holders exclusive benefits and roles within the dApp and the Zencrypt Discord community. ZC holders will also have open access to all of my Analytics & Signals Discord Server.",
+  "image": "collection.png",
+  "seller_fee_basis_points": 700,
+  "attributes": [
+    { "trait_type": "Collection", "value": "Zencrypt Pass" }
+  ],
+  "properties": {
+    "files": [{ "uri": "collection.png", "type": "image/png" }],
+    "category": "image"
+  }
+}

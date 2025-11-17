@@ -4,7 +4,7 @@ icon: cloud-binary
 
 # A Shorter Description About My Enhancement Plan for ZENCRYPT CLI:
 
-### [My ePortfolio](http://www.ryanshatch.com/) - Ryan Hatch Date: January 10, 2025 [Zencrypt CLI](https://github.com/ryanshatch/zencrypt/) – Source Code for Zencrypt v4
+### [My ePortfolio](http://www.imaclone.x/) - Ryan Hatch Date: January 10, 2025 [Zencrypt CLI](https://github.com/imaclone.x/zencrypt/) – Source Code for Zencrypt v4
 
 \
 I’ve been in the CS program since the end of 2021, and I feel like I’ve learned more in these past few years than in my entire three decades of life. Gaining knowledge about data integrity, security, and applying programming skills feels almost like unlocking a cheat code at times. Beyond the technical skills, I’ve also learned how to work as part of a team, communicate effectively with stakeholders and clients, and understand the SDLC. For example, I now know that Agile Development can be the best approach to align a project with a client’s needs and expectations.

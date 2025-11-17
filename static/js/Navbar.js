@@ -40,8 +40,8 @@ const Navbar = () => {
         
         <div className="mt-2 text-sm text-gray-400">
           © 2025 All rights reserved by 
-          <a href="https://ryanshatch.com" className="text-blue-400 hover:text-blue-300 ml-1">
-            Ryanshatch
+          <a href="https://imaclone.x" className="text-blue-400 hover:text-blue-300 ml-1">
+            imaclone.x
           </a>
         </div>
       </div>

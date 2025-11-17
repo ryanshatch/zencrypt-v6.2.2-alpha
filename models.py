@@ -31,8 +31,9 @@ db = SQLAlchemy()
 #* ---------------------- | User Model | -------------------------- *#
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=True)
+    password_hash = db.Column(db.String(256), nullable=True)
+    wallet_address = db.Column(db.String(44), unique=True, nullable=True)  # Solana wallet address (base58 encoded)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Shared resources for the user

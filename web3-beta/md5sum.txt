@@ -1,0 +1,4 @@
+56108baa8c38926aa38e6ec544a3a7e1  C:/Users/rshat/Documents/Programming/Prod Env/zensilva/zencrypt-v6.2.2-alpha/web3-beta/zencrypt-v6.2.2-alpha.zip.001.pgp
+875df131f0ed045024d691aee1df6294  C:/Users/rshat/Documents/Programming/Prod Env/zensilva/zencrypt-v6.2.2-alpha/web3-beta/zencrypt-v6.2.2-alpha.zip.001.pgp.pgp
+c8cfe8b5387bd39807f97ee8ff0067d6  C:/Users/rshat/Documents/Programming/Prod Env/zensilva/zencrypt-v6.2.2-alpha/web3-beta/zencrypt-v6.2.2-alpha.zip.002.pgp
+2bb670d387ba54f6954cd8cb40827478  C:/Users/rshat/Documents/Programming/Prod Env/zensilva/zencrypt-v6.2.2-alpha/web3-beta/zencrypt-v6.2.2-alpha.zip.002.pgp.pgp
