@@ -1,14 +1,15 @@
 <!--
 ********************************************************************************************
-* Title: Zencrypt WebApp           |********************************************************
-* Developed by: Ryan Hatch         |********************************************************
-  Date: August 10th 2022           |********************************************************
-  Last Updated: February 13th 2025 |********************************************************
-  Version: 5.3.3                   |********************************************************
+* Title: Zencrypt dApp              |********************************************************
+* Developed by: Ryan Hatch          |********************************************************
+  Date: August 10th 2022            |********************************************************
+  Last Updated: November 17th 2025  |********************************************************
+  Version: 6.2.2-alpha2             |********************************************************
 ********************************************************************************************
-*-****************************** Zencrypt v5.3-A3 |*****************************************
+*-****************************** Zencrypt v6.2.2-alpha2 |***********************************
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-|              Zencrypt Web-App is a Flask application that can be used to:                |
+|              Zencrypt dApp is a Solana-powered Flask application that can:               |
+|       - Authenticate users via Solana wallet signature (no password required).           |
 |       - Generate hashes: using SHA256 hashing algorithm, with an optional salt value.    |
 |       - Encrypt text and files: using Fernet symmetric encryption algorithm.             |
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
@@ -22,7 +23,7 @@
     <hr>
     <br>
     <p align="center">
-      <strong>Webapp Release - v6.2-alpha</strong>
+      <strong>dApp Release - v6.2.2-alpha2</strong>
 <!--       <br>
       <strong>By: Ryan Hatch</strong> -->
       <br>
@@ -36,12 +37,11 @@
 <!--       <br> -->
       <strong>Developed By: Ryan Hatch</strong>
     <p align="center"> &copy; 2025 Ryan Hatch <br> All Rights Reserved.<br><i><br>This software is proprietary and owned by Ryan Hatch. Unauthorized use, modification, or distribution is prohibited.</i> </p>
-<p align="center"><img src="https://img.shields.io/badge/Name:-Zencrypt-0A2647?style=for-the-badge" alt="Project Name"><img src="https://img.shields.io/badge/Author-Ryan%20S%20Hatch-0A2647?style=for-the-badge" alt="Project Author"> <img src="https://img.shields.io/badge/Started-January%202021-144272?style=for-the-badge" alt="Project Start Date"> <img src="https://img.shields.io/badge/Updated-Feb%2019%2C%202025-205295?style=for-the-badge" alt="Project Last Updated On"></p>
-<p align="center"><img src="https://img.shields.io/badge/Type:-Software%20Development-144272?style=for-the-badge" alt="Project Type"> <img src="https://img.shields.io/badge/Stage:-Production%20Ready-205295?style=for-the-badge" alt="Project Stage"> <img src="https://img.shields.io/badge/Version-v6.2.2--alpha-2C74B3?style=for-the-badge" alt="Project Version"></p>
+<p align="center"><img src="https://img.shields.io/badge/Name:-Zencrypt-0A2647?style=for-the-badge" alt="Project Name"><img src="https://img.shields.io/badge/Author-Ryan%20S%20Hatch-0A2647?style=for-the-badge" alt="Project Author"> <img src="https://img.shields.io/badge/Started-January%202021-144272?style=for-the-badge" alt="Project Start Date"> <img src="https://img.shields.io/badge/Updated-Nov%2017%2C%202025-205295?style=for-the-badge" alt="Project Last Updated On"></p>
+<p align="center"><img src="https://img.shields.io/badge/Type:-Decentralized%20Application-144272?style=for-the-badge" alt="Project Type"> <img src="https://img.shields.io/badge/Stage:-Alpha%20Web3-205295?style=for-the-badge" alt="Project Stage"> <img src="https://img.shields.io/badge/Version-v6.2.2--alpha2-2C74B3?style=for-the-badge" alt="Project Version"></p>
 <hr>
-<div class="webapp">
-  <h1>Webapp v6 and CLI v4.2</h1>
-  <!-- <h2>Webapp v6</h2> -->
+<div class="dapp">
+  <h1>dApp v6.2.2-alpha2 and CLI v4.2</h1>
   <ul>
     <li><a href="README.md">What is Zencrypt</a></li>
     <li><a href="cipher/zencrypt-cli.md">Getting To Know About The Zencrypt CLI</a></li>
@@ -86,17 +86,11 @@
 </div>
 <hr>
 <div class="table-of-contents">
-  <h1 align="center">Zencrypt <code>v6-A2</code> Web Application:</h1>
-<!-- <p align="center"><img src="https://img.shields.io/badge/Name:-Zencrypt-0A2647?style=for-the-badge" alt="Project Name"><img src="https://img.shields.io/badge/Author-Ryan%20S%20Hatch-0A2647?style=for-the-badge" alt="Project Author"> <img src="https://img.shields.io/badge/Started-January%202021-144272?style=for-the-badge" alt="Project Start Date"> <img src="https://img.shields.io/badge/Updated-Feb%2019%2C%202025-205295?style=for-the-badge" alt="Project Last Updated On"></p>
-<p align="center"><img src="https://img.shields.io/badge/Type:-Software%20Development-144272?style=for-the-badge" alt="Project Type"> <img src="https://img.shields.io/badge/Stage:-Production%20Ready-205295?style=for-the-badge" alt="Project Stage"> <img src="https://img.shields.io/badge/Version-v6.2.2--alpha-2C74B3?style=for-the-badge" alt="Project Version"></p> -->
+  <h1 align="center">Zencrypt <code>v6.2.2-alpha2</code> Decentralized Application:</h1>
 <hr>
-<!-- <br>
-<p><img src="https://img.shields.io/badge/Languages-Python%2C%20JavaScript%2C%20HTML%2C%20SQL-0A2647?style=for-the-badge" alt="Programming Languages"> <img src="https://img.shields.io/badge/Frameworks-Flask%2C%20React-144272?style=for-the-badge" alt="Frameworks"> <img src="https://img.shields.io/badge/Tools-SQLAlchemy-205295?style=for-the-badge" alt="Tools"></p>
-<br>
-<p><img src="https://img.shields.io/badge/Platform-Web%20Application-0A2647?style=for-the-badge" alt="Platform"> <img src="https://img.shields.io/badge/Deployment-Cloud%20Based-144272?style=for-the-badge" alt="Deployment Type"> <img src="https://img.shields.io/badge/Server-Gunicorn-205295?style=for-the-badge" alt="Hosting Service"></p> -->
-  <p align="center"><img src="https://img.shields.io/badge/Purpose-Encryption%20Platform-0A2647?style=for-the-badge" alt="Project Purpose"> <img src="https://img.shields.io/badge/Focus-Security%20Development-144272?style=for-the-badge" alt="Project Focus"> <img src="https://img.shields.io/badge/Milestones-Merge%20CLI%20to Web%20App-205295?style=for-the-badge" alt="Project Milestones"></p>
+  <p align="center"><img src="https://img.shields.io/badge/Purpose-Encryption%20Platform-0A2647?style=for-the-badge" alt="Project Purpose"> <img src="https://img.shields.io/badge/Focus-Web3%20Security%20Development-144272?style=for-the-badge" alt="Project Focus"> <img src="https://img.shields.io/badge/Milestones-Web2%20to%20Web3%20Migration-205295?style=for-the-badge" alt="Project Milestones"></p>
   <p align="center"><img src="https://img.shields.io/badge/Testing Code:-Snyk-0A2647?style=for-the-badge" alt="Snyk Tests"> <img src="https://img.shields.io/badge/Testing App:-OWASP%20ZAP-144272?style=for-the-badge" alt="Testing"> <img src="https://img.shields.io/badge/Quality%20Assurance-8.5/10-205295?style=for-the-badge" alt="Quality Assurance">
-  <img src="https://img.shields.io/badge/Status-Fully%20Complete-2C74B3?style=for-the-badge" alt="Project Status"></p>
+  <img src="https://img.shields.io/badge/Status-Alpha%20Web3-2C74B3?style=for-the-badge" alt="Project Status"></p>
 <hr>
 
 <h4 align="center"><code>
@@ -110,17 +104,17 @@
 </code></h4>
 <hr>
 
-<h5>I started this project with a CLI script that used core encryption functions and was designed with the purpose of parsing sensitive information offline to be encrypted or decrypted.<br><br> This project was intended to merge the final CLI program into a full fledged webapp that has all of the same functions. In the end, with <code>version 6-alpha</code>, the webapp resulted in a full fledged cipher that handles everything from hashing, AES, RSA, and fully implemented PGP functionality.
+<h5>I started this project with a CLI script that used core encryption functions and was designed with the purpose of parsing sensitive information offline to be encrypted or decrypted.<br><br> This project was intended to merge the final CLI program into a full fledged webapp that has all of the same functions, and with <code>version 6-alpha</code> that goal was reached — a complete cipher handling everything from hashing, AES, RSA, and fully implemented PGP functionality.
 <br><br>
-I worked on hosting Zencrypt on different web platforms and building a clean, modular design where each part works independently. None the less, I made sure to keep the core security hardened while making it easier for others to use the system.</h5>
+With <code>version 6.2.2-alpha2</code>, I took the next step I had been planning for a while: moving Zencrypt from web2 to web3. This version replaces the traditional email and password login system with Solana wallet-based authentication, meaning users prove their identity by signing a cryptographic challenge with their own wallet instead of storing a password anywhere on the server. No email, no password, no shared secret — just a public key and a signature.</h5>
 </p>
 <h5>
-I made sure to keep the technical foundation solid and chose Flask as the framework for the backend while implementing JWT authentication and proper key management in sub directories of the system. With that being said, the frontend needed to be just as thought out so I decided to use React to build my front end. To make the page UI/UX and navigation clean I created components for the webapp like <code>Navbar.js</code> and <code>auth.js</code> that would give users a clean UI for any device used to access the webapp.
+I restructured the backend from a monolithic <code>webapp.py</code> into a clean set of Flask Blueprints — auth, gate, crypto, and billing — so that each concern is fully separated and independently testable. The wallet authentication flow uses Ed25519 signature verification via PyNaCl, with nonce-based anti-replay protection baked in from the start. On top of that, I integrated Solana Pay so that users can purchase access plans directly with SOL, keeping the entire user journey on-chain.
 <br><br>
-I learned that separating the modules as utilities, database models, and web routes not only made the code cleaner but it made it much easier to use as a foundation to build off of in the future. In other words, keeping the code structured and clean made it more scalable in the end. I do still want to keep building on this project and adding more features and functionalities. For example, integrating ECC and Argon2 hashing while optimizing the way that large files are handled via parallel processing. Once I have <code>version 6</code> the way I like it, for <code>version 7</code> I plan on putting it on the blockchain and merging once again, but this time from web2 to web3 development.
+I learned that moving to web3 is not just a technology swap — it forces you to rethink what identity even means in your system. When a wallet address becomes the primary key for a user record, every assumption about password resets, email lookups, and session expiry has to be revisited. Keeping the encryption core unchanged while swapping out the entire auth layer was a good test of how well the modular design from the previous version had actually held up.
 </h5>
 
-> For now, I'm satisfied with the ways that Zencrypt has evolved from a simple CLI tool into a scalable and modular web platform. Starting out as a hash generator, Zencrypt has become more than just an encryption suite, but more or less, it shows a genuine reflection of my commitment to strong and solid security practices along with clean software design and development. In order to make an app have complex and intricate back ends without compromising the UI/UX is to simply remember that the key to web development is to **`keep it simple.`**</p>
+> This version represents the transition point I had been writing about since `version 6`. Zencrypt went from a hash generator, to a full cipher suite, to a web platform, and now to a decentralized application. Each step was a deliberate build on the one before it, and this step in particular reinforced why **`keeping it modular`** matters — the encryption engine did not have to change at all, only the door in front of it did.</p>
 
 <hr>
 
@@ -128,28 +122,39 @@ I learned that separating the modules as utilities, database models, and web rou
 ### 1. **Project Purpose and Evolution**
 
 - **Core Functionality:**  
-I started Zencrypt as a simple command-line tool, focusing primarily on basic SHA-256 hash generation and verification. With that being said, I learned quite a bit while developing each version, steadily expanding its capabilities to include comprehensive file encryption and RSA-based PGP features that give users more control over their security needs. None the less, my work on version 4.2 marked a significant milestone - I noticed the need to restructure the entire system into distinct modules, making it easier to scale while maintaining solid security practices.
+I started Zencrypt as a simple command-line tool focused primarily on SHA-256 hash generation and verification, then steadily expanded its capabilities to include file encryption, RSA-based PGP features, and a full web interface. Version 6-alpha marked the completion of the web2 platform — a modular, scalable Flask app with JWT authentication, SQLAlchemy ORM, and a React front end. Version 6.2.2-alpha2 is the first step into web3: the encryption and hashing features remain unchanged, but the entire authentication layer has been replaced with Solana wallet-based login.
 
 - **Evolutionary Path:**  
-Throughout this journey, I focused on transforming Zencrypt from a single-file script into a full-fledged web service without compromising its core security principles. I made sure each component could stand independently, thus creating a more dependable foundation for future enhancements. With that experience, I've learned that good software isn't just about adding features - it's about building a structure that stays strong as it grows.
+The progression from CLI to webapp to dApp followed a consistent philosophy: add capability without breaking what already works. In alpha2, email and password fields on the User model were made nullable and a `wallet_address` column was added to support wallet-only accounts, all while keeping backward compatibility for any existing email-based users. I made sure the cryptographic core — Fernet, AES, PGP — stayed exactly as it was, because the goal was not to rebuild Zencrypt but to give it a new front door.
 
 ---
 
 ### 2. **Architecture & Technology Stack**
 
-- **Backend Architecture:** I built the core application using *Flask*, focusing on creating secure *routes for authentication, encryption, and file handling*. None the less, I realized how important it was to have solid data management, so I implemented *SQLAlchemy ORM* for modeling users, hashes, and encryption keys into a dedicated module. None the less, I made sure to include `Flask-Migrate` and `Alembic` to properly be able to handle database changes or merges but still keeping it flexible and scalable for other systems. I used SQLite for development and production, but for this reason I made sure to keep the code modular to easily switch to another storage system or database, like MongoDB or MySQL.
+- **Backend Architecture:** I refactored the backend from a single `webapp.py` file into a set of Flask Blueprints, each with a single responsibility: `auth` handles wallet challenge and verification, `gate` protects the encryption routes, `crypto` exposes the hashing and cipher API, and `billing` manages Solana Pay subscriptions. This restructuring made each module independently testable and kept the application factory pattern clean. SQLAlchemy ORM and Flask-Migrate are still used for modeling users, hashes, and encryption keys, and the database remains SQLite in development with a straightforward path to swap it for another backend if needed.
 
-- **Security Implementation:** I focused on implementing *JWT authentication* through `Flask-JWT-Extended`, making sure that only registered users can access the webapp. None the less, this project has helped teach me that proper key management plays a crucial role in keeping the foundations of the webapp secure. With that in mind, I decided to store all of the sensitive configurations in external environment files and keys in specific directories outisde of the user environment, to respect the users privaledges and rules, while still having dedicated functions for key rotation and management.
+- **Security Implementation:** The authentication model in alpha2 is fundamentally different from the previous version. Instead of storing a password hash and issuing a JWT on credential match, the server now issues a one-time cryptographic nonce, waits for the client to return that nonce signed by their Solana wallet, and verifies the Ed25519 signature server-side using `PyNaCl`'s `VerifyKey`. No private key ever leaves the user's wallet. On successful verification, the user record is upserted by wallet address and a short-lived JWT is issued for the session. Nonces are stored in-memory with a ten-minute expiry and destroyed on use, preventing replay attacks.
 
-- **Cryptographic Foundation:** For encryption, I chose to use Fernet for handling text and AES (*in CFB mode*) for files, implementing a random salt for secure key derivation. In my webapp, I also noticed PGP encryption needed to be approached differently. To still get the functionality, I developed RSA functions for handling asymmetric encryption, along with generating keys and any file operations as well. This approach helped me understand that different encryption methods require different frameworks and implementations, but still can be achieved with a modular codebase and a solid foundation.
+- **Cryptographic Foundation:** The existing encryption stack — Fernet for text, AES in CFB mode for files, RSA PGP for asymmetric operations — is carried forward unchanged from version 6-alpha. On the web3 side, Ed25519 is used exclusively for wallet identity verification via `PyNaCl==1.5.0`, and Solana base58 address encoding is handled by `base58==2.1.1`. Keeping these two cryptographic layers cleanly separated — one for identity, one for data — helped me understand how a system can adopt blockchain primitives without having to rewrite its core security logic.
 
-- **Frontend Development:** I designed a responsive UI using React to help the layout stand out by adding components like `Navbar.js`, which is a navigation feature that helps provide the user with a clean and simple way to access to all of the webapp's features. I also made sure that `auth.js` handled not just the user authentication but also was integrated with the system used to generate PGP keys. This was a big way to keep a solid structure in modularity, scalability, and security, while still keeping the UI/UX simple and easy to use. Each user is given a unique set of keys, which is used when encrypting using PGP, thus making it to where the users dont have to worry about managing or sharing keys, but still have the ability to export and import keys as needed. This is a small feature that I believe can be made as a good example of how something simple can be made complex and intricate without compromising the UI/UX.
+- **Frontend Integration:** The wallet connection UI uses the Phantom browser extension's `window.solana` API. When a user clicks Connect, the frontend calls `window.solana.connect()` to get the public key, fetches a nonce from `GET /auth/nonce`, asks the wallet to sign it with `signMessage`, and posts the result to `POST /auth/verify`. Solflare and Ledger Live are also supported through the same flow. The Navbar component was updated to display a truncated wallet address in place of a username once the user is authenticated via wallet.
 
-- **CLI Integration:** I made sure that `version 6` of Zencrypt kept its CLI foundation while expanding into a web application. None the less, I noticed that keeping the core cryptographic functions in utils.py modular enough to serve both interfaces was important. This helped me learn how to keep the codebase clean and maintainable, while still being able to expand and add features without having to rewrite the entire system. Mind mapping the structure of the code and the way the user interacts with the system helped me understand that the key to web development is to keep it simple, and to make sure that the user can interact with the system in a way that is easy to understand and use.
+- **Solana Pay Integration:** The `billing` Blueprint exposes endpoints for creating and confirming Solana Pay invoices. Subscription plans are priced in lamports — personal, pro, and team tiers — and the payment flow uses a reference key system that is designed to be verified against on-chain transaction data in a production setting. A `WalletManager` class in `static/wallet.js` wraps the Phantom adapter and handles both the connection and the payment creation flows.
 
 ---
 
 ### 3. **Features and Functionalities**
+
+- **Wallet Authentication:**
+  - Supports Phantom, Solflare, and Ledger Live wallets.
+  - Nonce-based Ed25519 challenge/response — no password stored anywhere.
+  - Wallet address is the primary user identifier; email and password are optional fallbacks.
+  - JWT issued on successful verification; session stores wallet address.
+
+- **Solana Pay Subscriptions:**
+  - Personal, Pro, and Team plans denominated in lamports.
+  - Invoice creation and confirmation endpoints in the `billing` Blueprint.
+  - `WalletManager` JS class handles wallet connection and payment creation client-side.
 
 - **Hash Generation:**
   - Uses SHA256 with an optional salt.
@@ -165,56 +170,48 @@ Throughout this journey, I focused on transforming Zencrypt from a single-file s
 
 - **PGP Encryption:**
   - Generates RSA keys for the user and encrypts messages using the recipient's public key.
-  - Allows users to encrypt messages using a recipients public key and decrypt messages using their own private key.
+  - Allows users to encrypt messages using a recipient's public key and decrypt messages using their own private key.
   - Features for exporting and importing public keys are optional but provided to enhance the security of key management.
 
 - **User Authentication & Session Management:**
-  - Secure registration and login routes, including password hashing and JWT-based authentication.
-  - Session management ensures that users can access their data securely and efficiently.
+  - Primary: wallet address + Ed25519 signature via Solana wallet (Phantom / Solflare / Ledger).
+  - Fallback: email and password for backward compatibility with existing accounts.
+  - JWT-based session management with short-lived tokens.
   - User-specific encryption keys are generated and stored securely to ensure data privacy.
 
 - **Database Operations:**
-  - Models are defined for storing user information, encryption keys, logs of hashing or encryption events, and PGP keys.
+  - Models are defined for users (with optional wallet address), encryption keys, hashing or encryption event logs, and PGP keys.
   - SQLAlchemy ORM is used for database interactions, making it easy to manage and query data.
   - Database migrations are handled using Flask-Migrate and Alembic, ensuring that the database schema can be updated seamlessly.
-  - The use of SQLite for development and production databases ensures a lightweight and scalable solution.
   - The modular code structure allows for easy switching to other database systems like MongoDB or MySQL.
-
-- **UI/UX Enhancements:**
-  - The React components help to create a responsive and intuitive user interface. Features like `Navbar.js` and `auth.js` provide easy navigation and user authentication.
-  - The UI is designed to be clean, simple, and user-friendly, ensuring that users can easily access and utilize the encryption features.
-  - The integration of PGP encryption features into the UI demonstrates a commitment to enhancing security while maintaining the UI/UX simplicity.
-  - Zencrypt is still being developed in a format where eventually both, the CLI and    Web-Applciation can be merged into one and make it easier for user to access the system in a way that is easy to understand and use.
 
 ---
 
 ### 4. **Documentation, Flowcharts, and Future Enhancements**
 
-**Extensive Documentation:** I focused on making all of the documentation on Zencrypt to be clear and purposeful and explain both the how and why behind my development and design choices. I made sure to include detailed diagrams that can be used to better visualize  database interactions and encryption workflows. This helped me as well, because the more that I was able to mind map the structure of the code and the way the user interacts with the system, the more detail I was able to put into the documentation, which in turn helps the users understand the system better. I used to struggle with organization and documentation, but I learned that the more that I was able to add into the details, the more the users were able to understand and expect from the system.
+**Extensive Documentation:** Alpha2 ships with a full set of wallet authentication documents covering setup, quick reference, implementation details, and a migration guide for existing email-based users. I made sure these documents explain both the how and the why behind the design choices, just like the whitepapers in the earlier versions, so that anyone reading the codebase can understand the reasoning without having to reverse-engineer the implementation.
 
-**Whitepapers:** With that being said, I created a few important documents like "A Shorter Description About My Enhancement Plan for Zencrypt CLI" to help explain what the goal of this project is and to track the project's progress during the merge to the webapp. I also found that using flowcharts inside of my documentation is a good way to help users to properly visualize the systems logic and the back end more effectively.
+**Whitepapers:** The existing whitepapers from version 6 are carried forward intact because the underlying encryption design has not changed. The new wallet auth documents — `WALLET_AUTH_SETUP.md`, `WALLET_AUTH_QUICK_REFERENCE.md`, `WALLET_AUTH_IMPLEMENTATION_SUMMARY.md`, `MIGRATION_GUIDE.md`, and `DELIVERY_SUMMARY.md` — complement those whitepapers by documenting the web3 layer specifically.
 
-**Enhancement Plans:** I mapped out several enhancements that I still want to implement. For example, I plan to add ECC encryption and Argon2 hashing to the system, as well as optimize large file handling through parallel processing. I also plan to transition Zencrypt from web2 to web3, bringing its security features to the blockchain. These enhancements will help me to continue to grow and develop the system, while still keeping the core features and functionality of the system in place.
+**Enhancement Plans:** The immediate next steps are to replace the in-memory nonce store with a proper database-backed or Redis-backed store for multi-instance deployments, add real on-chain RPC verification to the Solana Pay confirmation endpoint, and expand wallet support beyond Phantom and Solflare. Longer term, the plan is to explore moving encryption key ownership fully on-chain so that users hold their keys in their wallet rather than in the server database.
 
-**Professional Skills and ePortfolio:** I've learned that building secure software is about more than just writing code, but is also about creating systems that grow thoughtfully. Looking back at the progress along the way, from a CLI tool to a web platform, I noticed how each change taught me something valuable about security and scalable design. 
-
-With that being said, Im still planning on adding different methods of encryption and hashing along with optimizing the way that large files are currently handled, by using parallel processing. For version 7, Im hopeful to be able to transition this application yet again, but this time from web2 to web3 applications. None the less, Im still satisfied to see my work reflecting in both, solid security practices and in clean development principles.
+**Professional Skills and ePortfolio:** Building the web3 layer on top of the existing web2 foundation taught me that a well-structured modular codebase is one of the most valuable things you can invest in early. The fact that the encryption engine required zero changes when the authentication layer was completely replaced is a direct result of the design choices made in version 6.
 
 ---
 
 ### 5. **Deployment and Operational Considerations**
 
-**Deployment Configuration:** I set up Zencrypt for cloud deployment using Gunicorn as my web server, configuring everything in render.yaml. With that being said, I learned that proper environment variable management was crucial for maintaining security in production. Thus, I made sure that my configuration system remained flexible yet secure across different deployment environments. I also made sure to keep the code modular, so that it could be easily deployed to different cloud services, like AWS or Azure, without having to rewrite the entire system.
+**Deployment Configuration:** Zencrypt alpha2 is configured for cloud deployment using Gunicorn as the web server, with the same `render.yaml` setup from version 6. The two new runtime dependencies — `PyNaCl==1.5.0` and `base58==2.1.1` — are added to `requirements.txt` and require no special build steps. Environment variables for `JWT_SECRET`, `MERCHANT_WALLET`, and `RPC_URL` must be set before deployment; these are documented in the `.env` template included in the repository.
 
-**Testing and Quality Assurance:** I focused heavily on building a thorough testing process for Zencrypt. I started with unit tests in test_webapp.py to make sure that the database operations stayed solid. Then I ran security checks using Snyk for vulnerability scanning and OWASP ZAP to guard against common web attacks. With that being said, I made sure to maintain clean code practices, using Pylint and Flake8 to keep my codebase consistent. I also made sure to keep the code modular, so that it could be easily tested and maintained, without having to, once again, rewrite the entire system.
+**Testing and Quality Assurance:** Alpha2 includes a dedicated test suite in `test_wallet_auth.py` that covers nonce generation, Ed25519 key pair creation, server-side signature verification, and session persistence. These tests run without a browser or a real wallet, making them suitable for CI. The existing `test_webapp.py` unit tests for database operations and encryption routes continue to pass unchanged. Security scanning with Snyk and OWASP ZAP from version 6 is carried forward as part of the QA process.
 
 ---
 
 ### 6. **Summary**
 
-Looking back at Zencrypt's progress along the last few months, I have seen how the program grew from a simple offline and local CLI tool into something online, accessible, and more meaningful. I focused on merging traditional encryption methods with modern methods and technologies in order to create a platform that stays secure while still being easier to use. On another note, I was taught that good software design is about balancing simple and complex functionalities without breaking the UI/UX. In my case, I combined the reliability that Flask offers with React's clean UI, all while maintaining strong cryptographic foundations in the design.
+Looking back at Zencrypt's path from a command-line hash tool to a decentralized application, the most important thing I have taken away is that each version had to be built well enough to be a foundation for the next one. Version 6 gave me a solid modular Flask platform with clean separation between the encryption logic, the database models, and the web routes. Alpha2 proved that foundation by swapping the entire authentication layer — from email and password to cryptographic wallet signatures — without touching the encryption engine at all.
 
-I made sure every part of Zencrypt reflected showed that there was a thought process before and during the development, from the modular architecture that I used in my code to the length of my in depth documentation. In the end, my little hash generator CLI has been merged into something that can be looked at as more than just code and a website. Zencrypt has become a timestamped entry journal over the past several years that can be used to see how I approach software development with security in mind. Zencrypt is a testimony as to the way that I practice keeping a balance between security and usability, while still keeping the code clean and maintainabl
+The move to web3 is more than a technology choice. It changes what a user account means, what login means, and what trust means. In Zencrypt alpha2, a user is a Solana public key, login is a signature, and trust is cryptographic proof rather than a shared secret. I made sure every part of this version reflected a genuine understanding of those differences, from the nonce-based anti-replay design in the auth flow to the lamport-denominated subscription model in the billing layer. In the end, Zencrypt is still doing the same thing it always did — keeping data secure — but now the door to the system is secured by the same kind of cryptography that secures the data inside it.
 
 <hr>
 
@@ -225,105 +222,60 @@ I made sure every part of Zencrypt reflected showed that there was a thought pro
 <li>Jan 21st 2025 - Merged the CLI into a webapp using the Flask framework. The current version is being hosted at <a href="https://zencrypt.app">Zencrypt.app</a></li>
 <li>Jan 22nd 2025 - Users can upload files for encryption and decryption.</li>
 <li>Jan 26th 2025 - Allows users to manage sessions by creating an account and logging in.</li>
-<li>Jan 27th 2025 - Fully merged MongoDB into the backend for user authentication and session management.</li>
+<li>Jan 27th 2025 - Fully merged SQLite and SQLAlchemy into the backend for user authentication and session management.</li>
 <li>Jan 28th 2025 - Created new schemas for the database to store user information and session data.</li>
+<li>Nov 14th 2025 - Began web2 to web3 migration. Added <code>wallet_address</code> field to User model; made email and password nullable.</li>
+<li>Nov 15th 2025 - Implemented Ed25519 wallet signature verification using PyNaCl. Added <code>/auth/nonce</code> and <code>/auth/verify</code> endpoints.</li>
+<li>Nov 16th 2025 - Added Phantom and Solflare wallet connection UI. Integrated Solana Pay billing Blueprint with personal, pro, and team plans.</li>
+<li>Nov 17th 2025 - Refactored backend from monolithic webapp.py into Flask Blueprints (auth, gate, crypto, billing). dApp v3.1 released as alpha2.</li>
 <hr>
 <h2 id="introduction">Introduction</h2>
-<p> Zencrypt is a webapp that allows users to hash, encrypt, and decrypt text and files. The webapp runs on the Flask framework and is hosted at <a href="https://zencrypt.app">Here.</a>
+<p> Zencrypt is a decentralized application (dApp) that allows users to hash, encrypt, and decrypt text and files — authenticated entirely through a Solana wallet, with no password required. The dApp runs on the Flask framework and is hosted at <a href="https://zencrypt.app">Here.</a>
     <br>
-    <p>The web app is built for simplicity and ease of use, allowing users to hash, encrypt, and decrypt text and files effortlessly. Future updates will include PGP encryption, fully integrating the CLI scripts capabilities into the web app. The backend uses MongoDB for user authentication, session management, and securely storing encrypted metadata while keeping user inputs in plain text.</p>
+    <p>The dApp is built for simplicity and security, combining the encryption suite from version 6 with Solana wallet-based authentication. Users connect their Phantom, Solflare, or Ledger wallet, sign a one-time cryptographic nonce, and are issued a session token — no email, no password, no shared secret stored on the server. Subscription access is handled through Solana Pay, keeping the entire user journey on-chain.</p>
 <h2 id="features">Features</h2>
 <h2>System Overview</h2>
-<p>Zencrypt is a Flask-based web application focused on encryption, hashing, and secure file operations. The project aims to provide a seamless transition from the CLI experience to a web interface while maintaining strong security foundations.</p>
+<p>Zencrypt is a Flask-based decentralized application focused on encryption, hashing, and secure file operations with Solana wallet authentication. The project completes the planned migration from the web2 platform in version 6 to a web3 dApp, while maintaining the same strong cryptographic foundations.</p>
 <h2>Functions</h2>
 <ul>
+  <li>Solana wallet authentication — Phantom, Solflare, and Ledger Live</li>
+  <li>Ed25519 nonce-based challenge/response login (no password stored)</li>
+  <li>Solana Pay subscription billing (personal, pro, and team plans)</li>
   <li>SHA256 hashing with optional salt values</li>
   <li>Fernet symmetric encryption for text</li>
   <li>AES-based file encryption with password protection</li>
   <li>PGP asymmetric encryption with key management</li>
-  <li>User authentication with JWT tokens</li>
+  <li>JWT session management after wallet verification</li>
   <li>Secure key storage in dedicated directory</li>
   <li>SQLite database with encrypted storage</li>
 </ul>
 <h2 id="installation">Installation</h2>
 <p> To install Zencrypt, you will need to follow these steps: </p>
 <ol>
-  <li>Clone the repository or download the source code with the command:<br><code>git clone https://github.com/ryanshatch/Zencrypt.git</code>. </li>
-    <li>Navigate to the project directory with the command: <code>cd Zencrypt</code>. </li>
+  <li>Clone the alpha2 branch of the repository with the command:<br><code>git clone -b alpha2 https://github.com/ryanshatch/zencrypt-v6.2.2-alpha.git</code>. </li>
+    <li>Navigate to the project directory with the command: <code>cd zencrypt-v6.2.2-alpha</code>. </li>
     <li>First, you will need to install Python 3.7 or higher. You can download Python from the official website: <a href="https://www.python.org/downloads/">https://www.python.org/downloads/</a>. </li>
         <li>Next, you will need to install pip, the Python package manager. You can install pip by following the instructions on the official website: <a href="https://pip.pypa.io/en/stable/installation/">https://pip.pypa.io/en/stable/installation/</a>. </li>
         <li>Once you have installed Python and pip, you can create a virtual environment with the command: <code>python -m venv venv</code>. </li>
         <li>Activate the virtual environment with the command: <code>source venv/bin/activate</code> on Linux or <code>venv\Scripts\activate</code> on Windows. </li>
   <li>Install the required dependencies with the command: <code>pip install -r requirements.txt</code>. </li>
+  <li>Copy <code>.env</code> to your local environment and set <code>JWT_SECRET</code>, <code>MERCHANT_WALLET</code>, and <code>RPC_URL</code> before running. </li>
+  <li>Install the <a href="https://phantom.app/">Phantom</a> or <a href="https://solflare.com/">Solflare</a> browser extension to use wallet authentication. </li>
 </ol>
 <h2 id="usage">How to Run Locally:</h2>
-<p> To use the webapp, you will need to follow these steps: </p>
+<p> To use the dApp, you will need to follow these steps: </p>
 <ol>
-  <li>Run the webapp with the command: <code>python webapp.py</code>. </li>
+  <li>Start the application with the command: <code>python run.py</code>. </li>
   <li>Open a web browser and navigate to <code>http://localhost:5000</code>. </li>
-  <li>Use the webapp to hash, encrypt, and decrypt text and files. </li>
+  <li>Click <strong>Connect Phantom</strong> (or Solflare) to authenticate with your Solana wallet. </li>
+  <li>Once authenticated, use the dApp to hash, encrypt, and decrypt text and files. </li>
 </ol>
 <hr>
-<p>PGP Functionality:
-Users and how it ties with their email within the PGP functionality to lookup the public key of the recipient within the database for encryption/ decryption.
-
-The process is:
-
-User enters recipient's email
-System looks up that user in the database
-Gets that user's public PGP key
-Uses that public key to encrypt the message
-This follows the standard PGP encryption workflow where:
-
-Messages are encrypted using the recipient's public key
-Only the recipient can decrypt it using their private key
-No actual emails are sent - it's just used as an identifier to find the right public key
-Think of it like a mailbox system - you need someone's address (email) to look up their mailbox (public key) to send them an encrypted message.
-
-In your code, the "Recipient's email" is not used for sending emails - it's used to look up the recipient's PGP public key in the database for encryption. Here's how it works:
-</p>
-
-```python
-@app.route('/pgp/encrypt', methods=['POST'])
-def pgp_encrypt():
-    if not session.get('user_id'):
-        return redirect(url_for('login'))
-
-    message = request.form.get('message')
-    recipient_email = request.form.get('recipient_email')
-    
-    try:
-        # Right here it looks up the recipient user by their email
-        recipient = User.query.filter_by(email=recipient_email).first()
-        if not recipient:
-            return "Recipient not found", 404
-            
-        # Get recipient's public key from database    
-        recipient_key = PGPKey.query.filter_by(user_id=recipient.id, active=True).first()
-        if not recipient_key:
-            return "Recipient has no active PGP key", 400
-            
-        # Use recipient's public key to encrypt the message
-        encrypted = pgp_encrypt_message(message, recipient_key.public_key)
-        return render_template_string(APP_TEMPLATE,
-            content="Encrypted message:<br><textarea readonly>%s</textarea>" % encrypted)
-    except Exception as e:
-        return f"Error encrypting message: {str(e)}", 500
-```
-
-The process I am using is:
-1. The user will enter the recipients email enters recipient's email
-2. The System looks for that user in the database using the email as the unique identifier
-3. Gets that user's public PGP key from the database
-4. Uses that public key stored in the database to encrypt the message
-
-This follows the standard PGP encryption workflow where:
-- Messages are encrypted using the recipient's public key
-- Only the recipient can decrypt things using their private key
-- No actual emails are sent, so the email is just used as an identifier to find the right public key
-<br>
-<hr>
-    <h2 id="examples">Examples of CLI (v4.2-alpha) Functionality:</h2>
+    <h2 id="examples">Web3 Login and CLI (v4.2-alpha) Examples:</h2>
+    <h3 align="center">Web3 Wallet Login:</h3>
+    <center>
+      <img alt="Web3 Login" src="WEB3-login.JPG" style="width: 100%; height: 100%;" />
+    </center>
     <h3 align="center">Hashing:</h3>
     <center>
       <img alt="Hashing Example" src="https://github.com/ryanshatch/zencrypt/blob/v6.2.2-alpha/img/zencrypthash.png" style="width: 100%; height: 100%;" />
@@ -384,7 +336,7 @@ This follows the standard PGP encryption workflow where:
     <!-- <strong>This script is provided for educational and demonstration purposes only. Use it responsibly and adhere to all applicable laws and regulations.</strong></br></p> -->
     <p align="center">
       <strong>
-        <code>I am absolutely immune from any responsibility in regaurds to any damages or loss of data caused by the <br>use, abuse, or misuse of this software. </code>
+        <code>I am absolutely immune from any responsibility in regards to any damages or loss of data caused by the <br>use, abuse, or misuse of this software. </code>
       </strong>
       </br>
       <!-- <p align="center"><strong><=><=><=></strong></br></p> -->
