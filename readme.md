@@ -36,7 +36,7 @@
     <p align="center">
 <!--       <br> -->
       <strong>Developed By: Ryan Hatch</strong>
-    <p align="center"> &copy; 2025 Ryan Hatch <br> All Rights Reserved.<br><i><br>This software is proprietary and owned by Ryan Hatch. Unauthorized use, modification, or distribution is prohibited.</i> </p>
+    <p align="center"> &copy; 2026 Ryan Hatch <br> All Rights Reserved.<br><i><br>This software is proprietary and owned by Ryan Hatch. Unauthorized use, modification, or distribution is prohibited.</i> </p>
 <p align="center"><img src="https://img.shields.io/badge/Name:-Zencrypt-0A2647?style=for-the-badge" alt="Project Name"><img src="https://img.shields.io/badge/Author-Ryan%20S%20Hatch-0A2647?style=for-the-badge" alt="Project Author"> <img src="https://img.shields.io/badge/Started-January%202021-144272?style=for-the-badge" alt="Project Start Date"> <img src="https://img.shields.io/badge/Updated-Nov%2017%2C%202025-205295?style=for-the-badge" alt="Project Last Updated On"></p>
 <p align="center"><img src="https://img.shields.io/badge/Type:-Decentralized%20Application-144272?style=for-the-badge" alt="Project Type"> <img src="https://img.shields.io/badge/Stage:-Alpha%20Web3-205295?style=for-the-badge" alt="Project Stage"> <img src="https://img.shields.io/badge/Version-v6.2.2--alpha2-2C74B3?style=for-the-badge" alt="Project Version"></p>
 <hr>
@@ -390,3 +390,4 @@ The move to web3 is more than a technology choice. It changes what a user accoun
 <p align="center">For any inquiries or suggestions, please contact me at <a href="mailto:ryanshatch@gmail.com">ryanshatch@gmail.com</a>.
 </body>
 </html>
+
