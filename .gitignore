@@ -1,0 +1,53 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+zenven/
+env/
+.venv/
+ENV/
+
+# Distribution / packaging
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Encryption key files — NEVER commit secret or private keys
+*.key
+etc/secrets/
+etc/public/
+
+# Database files — may contain user data
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# SQLite browser project files — reveal schema information
+*.sqbpro
+
+# Environment variable files
+.env
+.env.*
+!.env.example
+
+# Upload directory — user-uploaded content
+uploads/
+
+# IDE / editor artifacts
+.vscode/
+.idea/
+*.code-workspace
+*.swp
+*.swo
+
+# macOS / Windows OS artifacts
+.DS_Store
+Thumbs.db

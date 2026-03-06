@@ -48,8 +48,13 @@ class CryptoQueue:
 
 class ECCHandler:
     """Handles Elliptic Curve Cryptography operations"""
-    def __init__(self):
-        self.curve = ec.SECP384R1()
+    def __init__(self, curve: str = 'secp384r1'):
+        curve_map = {
+            'secp384r1': ec.SECP384R1(),
+            'secp256r1': ec.SECP256R1(),
+            'secp521r1': ec.SECP521R1(),
+        }
+        self.curve = curve_map.get(curve.lower(), ec.SECP384R1())
         self.backend = default_backend()
 
     def generate_keypair(self) -> Tuple[ec.EllipticCurvePrivateKey, ec.EllipticCurvePublicKey]:
@@ -71,12 +76,13 @@ class ECCHandler:
 
 class Argon2Handler:
     """Handles Argon2 password hashing"""
-    def __init__(self):
+    def __init__(self, time_cost: int = 3, memory_cost: int = 65536,
+                 parallelism: int = 4, hash_len: int = 32):
         self.ph = argon2.PasswordHasher(
-            time_cost=3,
-            memory_cost=65536,
-            parallelism=4,
-            hash_len=32
+            time_cost=time_cost,
+            memory_cost=memory_cost,
+            parallelism=parallelism,
+            hash_len=hash_len
         )
 
     def hash_password(self, password: str) -> str:
@@ -91,8 +97,11 @@ class Argon2Handler:
 
 class ParallelFileProcessor:
     """Handles parallel processing of large files"""
-    def __init__(self, num_workers: int = None):
+    def __init__(self, num_workers: int = None, chunk_size: int = CHUNK_SIZE,
+                 use_processes: bool = False):
         self.num_workers = num_workers or os.cpu_count()
+        self.chunk_size = chunk_size
+        self.use_processes = use_processes
         self.chunk_queue = CryptoQueue()
         self.merkle_tree = None
 
