@@ -33,12 +33,18 @@ from models import db, User, Hash, EncryptedText, Key, PGPKey  # Add PGPKey here
 from flask import Flask, request, render_template_string, redirect, url_for, session, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from cryptography.fernet import Fernet
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_wtf.csrf import CSRFProtect, generate_csrf
+from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization
 from werkzeug.security import generate_password_hash, check_password_hash
+from markupsafe import escape
 import hashlib
+import logging
 import os
+import re
 import base64
 import secrets
 from datetime import timedelta
@@ -47,6 +53,8 @@ from utils import generate_pgp_keypair, pgp_encrypt_message, pgp_decrypt_message
 from flask_migrate import Migrate
 from crypto_utils import ECCHandler, Argon2Handler, ParallelFileProcessor
 from config import config
+
+logger = logging.getLogger(__name__)
 
 # #* ---------------------- | Environment & Database Configuration | ---------------------- #
 
@@ -62,7 +70,7 @@ config[config_name].init_app(app)
 # SQLite Configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', f'sqlite:///{basedir}/zencrypt.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database
 db.init_app(app)
@@ -72,16 +80,42 @@ migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
 
-app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
+# SECRET_KEY must be set to a stable value so sessions survive restarts.
+# os.urandom(24) as a fallback means every restart invalidates all sessions.
+_secret_key = os.environ.get('SECRET_KEY')
+if not _secret_key:
+    if os.getenv('FLASK_ENV') == 'production':
+        raise RuntimeError('SECRET_KEY environment variable must be set in production')
+    _secret_key = secrets.token_hex(32)
+app.secret_key = _secret_key
+
+# CSRF protection configuration
+app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1 hour
 
 # #* ---------------------- | JWT Configuration | ---------------------- #
 
-# secret key and token expiration time of 1 hour
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+# JWT secret key — require an explicit value so JWT tokens are never signed with None
+_jwt_secret = os.getenv('JWT_SECRET_KEY') or _secret_key
+if not _jwt_secret:
+    raise RuntimeError('JWT_SECRET_KEY (or SECRET_KEY) environment variable must be set')
+app.config['JWT_SECRET_KEY'] = _jwt_secret
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 # Initialize JWT Manager
 jwt = JWTManager(app)
+
+# #* ---------------------- | Rate limiting | ---------------------- #
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
+
+# #* ---------------------- | CSRF Protection | ---------------------- #
+
+csrf = CSRFProtect(app)
 
 # #* ---------------------- | Key Management | ---------------------- #
 def initialize_key(user_id):
@@ -159,6 +193,22 @@ def get_file_processor():
         chunk_size=app.config['CHUNK_SIZE'],
         use_processes=app.config['USE_PROCESSES']
     )
+
+# #* ---------------------- | Security Response Headers | ---------------------- #
+
+@app.after_request
+def add_security_headers(response):
+    """Add security-relevant HTTP response headers to every response."""
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # X-XSS-Protection is deprecated in modern browsers but retained for
+    # defense-in-depth coverage on legacy browsers that still honour it.
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = 'geolocation=(), camera=(), microphone=()'
+    if not app.debug:
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
 
 # #* ---------------------- | Styling and HTML for the Web-App | ---------------------- #
 
@@ -379,6 +429,7 @@ APP_TEMPLATE = f"""
                     <div class="error-message">{{{{ error }}}}</div>
                 {{% endif %}}
                 <form method="POST" action="{{% if request.path == '/register' %}}/register{{% else %}}/login{{% endif %}}">
+                    <input type="hidden" name="csrf_token" value="{{{{ csrf_token() }}}}">
                     <input type="email" name="email" placeholder="Email" required>
                     <input type="password" name="password" placeholder="Password" required>
                     <button type="submit">{{% if request.path == '/register' %}}Register{{% else %}}Login{{% endif %}}</button>
@@ -455,6 +506,7 @@ def favicon():
 
 #* ---------------------- | Authentication Routes | ---------------------- #
 @app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("10 per minute")
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -499,8 +551,9 @@ def register():
             return redirect(url_for('login'))
         except Exception as e:
             db.session.rollback()
-            return render_template_string(APP_TEMPLATE, 
-                error=f"Registration failed: {str(e)}")
+            logger.error("Registration error: %s", e)
+            return render_template_string(APP_TEMPLATE,
+                error="Registration failed. Please try again.")
     
     return render_template_string(APP_TEMPLATE)
 
@@ -530,10 +583,12 @@ def logout():
 def hash_page():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    
-    content = """
+
+    token = generate_csrf()
+    content = f"""
     <div class="form-container">
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{token}">
             <textarea name="text" placeholder="Enter text to hash"></textarea>
             <input type="text" name="salt" placeholder="Salt (optional)">
             <div class="button-wrapper">
@@ -567,10 +622,12 @@ def hash_page():
 def encrypt_page():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    
-    content = """
+
+    token = generate_csrf()
+    content = f"""
     <div class="form-container">
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{token}">
             <textarea name="text" placeholder="Enter text to encrypt"></textarea>
             <div class="button-wrapper">
                 <button type="submit">Encrypt</button>
@@ -578,14 +635,14 @@ def encrypt_page():
         </form>
     </div>
     """
-    
+
     if request.method == 'POST':
         text = request.form.get('text', '')
         if text:
             try:
                 cipher_suite = get_cipher_suite(session['user_id'])
                 encrypted = cipher_suite.encrypt(text.encode())
-                
+
                 # Store in database
                 new_encrypted = EncryptedText(
                     encrypted_content=encrypted.decode(),
@@ -593,16 +650,17 @@ def encrypt_page():
                 )
                 db.session.add(new_encrypted)
                 db.session.commit()
-                
+
                 return render_template_string(APP_TEMPLATE,
                     content=content,
                     output=f"Encrypted Text:\n{encrypted.decode()}")
             except Exception as e:
                 db.session.rollback()
+                logger.error("Encryption error: %s", e)
                 return render_template_string(APP_TEMPLATE,
                     content=content,
-                    output=f"Error: {str(e)}")
-    
+                    output="Encryption failed. Please try again.")
+
     return render_template_string(APP_TEMPLATE, content=content)
 
 #* Route to the decrypt text page of the web-app with the decryption function
@@ -610,10 +668,12 @@ def encrypt_page():
 def decrypt_page():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    
-    content = """
+
+    token = generate_csrf()
+    content = f"""
     <div class="form-container">
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{token}">
             <textarea name="text" placeholder="Enter text to decrypt"></textarea>
             <div class="button-wrapper">
                 <button type="submit">Decrypt</button>
@@ -621,7 +681,7 @@ def decrypt_page():
         </form>
     </div>
     """
-    
+
     if request.method == 'POST':
         text = request.form.get('text', '')
         if text:
@@ -631,11 +691,16 @@ def decrypt_page():
                 return render_template_string(APP_TEMPLATE,
                     content=content,
                     output=f"Decrypted Text:\n{decrypted.decode()}")
-            except Exception as e:
+            except InvalidToken:
                 return render_template_string(APP_TEMPLATE,
                     content=content,
-                    output=f"Error: {str(e)}")
-    
+                    output="Decryption failed: invalid ciphertext or wrong key.")
+            except Exception as e:
+                logger.error("Decryption error: %s", e)
+                return render_template_string(APP_TEMPLATE,
+                    content=content,
+                    output="Decryption failed. Please try again.")
+
     return render_template_string(APP_TEMPLATE, content=content)
 
 #* ---------------------- | File Operations Route | ---------------------- #
@@ -644,10 +709,12 @@ def decrypt_page():
 def file_page():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    
-    content = """
+
+    token = generate_csrf()
+    content = f"""
     <div class="form-container">
         <form method="POST" enctype="multipart/form-data" style="text-align: center;">
+            <input type="hidden" name="csrf_token" value="{token}">
             <div class="file-upload-wrapper" style="margin: 20px 0;">
                 <label for="file-upload" class="custom-file-upload" style="
                     display: inline-block;
@@ -681,34 +748,34 @@ def file_page():
         </form>
     </div>
     <script>
-        document.getElementById('file-upload').onchange = function() {
+        document.getElementById('file-upload').onchange = function() {{
             document.getElementById('file-name').textContent = this.files[0] ? this.files[0].name : '';
-        };
+        }};
     </script>
     """
-    
+
     if request.method == 'POST':
         if 'file' not in request.files:
             return render_template_string(APP_TEMPLATE,
                 content=content,
                 output="Please select a file to process")
-            
+
         file = request.files['file']
         if file.filename == '':
             return render_template_string(APP_TEMPLATE,
                 content=content,
                 output="No file selected")
-            
+
         try:
             file_content = file.read()
             password = request.form.get('password', '').encode()
             operation = request.form.get('operation')
-            
+
             if not password:
                 return render_template_string(APP_TEMPLATE,
                     content=content,
                     output="Password is required")
-            
+
             cipher_suite = get_cipher_suite(session['user_id'])
             if operation == 'encrypt':
                 encrypted = cipher_suite.encrypt(file_content)
@@ -724,65 +791,90 @@ def file_page():
                 except Exception:
                     return render_template_string(APP_TEMPLATE,
                         content=content,
-                        output="Invalid encrypted file or wrong password")
-                
+                        output="Invalid encrypted file or wrong key")
+
         except Exception as e:
+            logger.error("File processing error: %s", e)
             return render_template_string(APP_TEMPLATE,
                 content=content,
-                output=f"Error processing file: {str(e)}")
-    
+                output="Error processing file. Please try again.")
+
     return render_template_string(APP_TEMPLATE, content=content)
 
 @app.route('/export-key', methods=['GET', 'POST'])
 def export_key():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    
+
     try:
         key = Key.query.filter_by(user_id=session['user_id'], active=True).first()
         if key:
-            key_name = request.args.get('key_name', 'zen_key')  # Default to 'zen_key' if no name provided
+            # Sanitize key_name: only allow alphanumeric chars, hyphens, and underscores
+            # to prevent Content-Disposition header injection
+            raw_name = request.args.get('key_name', 'zen_key')
+            key_name = re.sub(r'[^a-zA-Z0-9_-]', '', raw_name) or 'zen_key'
             response = app.response_class(
                 key.key_value,
                 mimetype='application/octet-stream',
-                headers={'Content-Disposition': f'attachment;filename={key_name}.key'}
+                headers={'Content-Disposition': f'attachment; filename="{key_name}.key"'}
             )
             return response
         return "No active key found", 404
     except Exception as e:
-        return f"Error exporting key: {str(e)}", 500
+        logger.error("Key export error: %s", e)
+        return "Error exporting key", 500
 
 @app.route('/import-key', methods=['GET', 'POST'])
 def import_key():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    
+
     if request.method == 'GET':
-        # Show the file upload form 
-        content = """
+        # Show the file upload form
+        token = generate_csrf()
+        content = f"""
         <div class="form-container">
             <form method="POST" action="/import-key" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{token}">
                 <input type="file" name="key_file" style="display: none;" id="key_file" onchange="this.form.submit()">
                 <button type="button" onclick="document.getElementById('key_file').click()">Import Key</button>
             </form>
         </div>
         """
         return render_template_string(APP_TEMPLATE, content=content)
-    
+
     # Handle POST request (file upload)
     if 'key_file' not in request.files:
         return redirect(url_for('hash_page'))
-        
+
     file = request.files['key_file']
     if file.filename == '':
         return redirect(url_for('hash_page'))
-        
+
     try:
         key_content = file.read().decode().strip()
-        # Deactivate old key
+
+        # Validate that the uploaded file is a well-formed Fernet key
+        # before replacing the user's active key.
+        # Fernet raises ValueError for malformed keys (wrong length / bad base64).
+        try:
+            Fernet(key_content.encode())
+        except ValueError:
+            token = generate_csrf()
+            content = f"""
+            <div class="form-container">
+                <form method="POST" action="/import-key" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{token}">
+                    <input type="file" name="key_file" style="display: none;" id="key_file" onchange="this.form.submit()">
+                    <button type="button" onclick="document.getElementById('key_file').click()">Import Key</button>
+                </form>
+            </div>
+            """
+            return render_template_string(APP_TEMPLATE, content=content,
+                error="Invalid key file: not a valid Fernet key.")
+
+        # Deactivate old key and store the new one
         Key.query.filter_by(user_id=session['user_id'], active=True).update({"active": False})
-        
-        # Create new key entry
         new_key = Key(
             key_value=key_content,
             user_id=session['user_id'],
@@ -793,21 +885,25 @@ def import_key():
         return redirect(url_for('hash_page'))
     except Exception as e:
         db.session.rollback()
-        return f"Error importing key: {str(e)}", 500
+        logger.error("Key import error: %s", e)
+        return "Error importing key", 500
 
 @app.route('/pgp', methods=['GET'])
 def pgp_page():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    
-    content = """
+
+    token = generate_csrf()
+    content = f"""
     <div class="form-container">
         <form method="POST" action="/pgp/generate">
+            <input type="hidden" name="csrf_token" value="{token}">
             <div class="button-wrapper">
                 <button type="submit">Generate Keys</button>
             </div>
         </form>
         <form method="POST" action="/pgp/encrypt">
+            <input type="hidden" name="csrf_token" value="{token}">
             <textarea name="message" placeholder="Message:"></textarea>
             <input type="text" name="recipient_email" placeholder="Email of recipient" required>
             <div class="button-wrapper">
@@ -815,6 +911,7 @@ def pgp_page():
             </div>
         </form>
         <form method="POST" action="/pgp/decrypt">
+            <input type="hidden" name="csrf_token" value="{token}">
             <textarea name="encrypted_message" placeholder="Message:"></textarea>
             <div class="button-wrapper">
                 <button type="submit">Decrypt</button>
@@ -822,77 +919,84 @@ def pgp_page():
         </form>
     </div>
     """
-    
+
     return render_template_string(APP_TEMPLATE, content=content)
 
 @app.route('/pgp/generate', methods=['POST'])
 def generate_pgp():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    
+
     try:
         private_key, public_key = generate_pgp_keypair()
-        
+
         # Deactivate old keys
         PGPKey.query.filter_by(user_id=session['user_id'], active=True).update({"active": False})
-        
+
         # Store new keys
         new_keys = PGPKey(
             public_key=public_key,
             private_key=private_key,
             user_id=session['user_id']
         )
-        
+
         db.session.add(new_keys)
         db.session.commit()
-        
+
         return redirect(url_for('pgp_page'))
     except Exception as e:
-        return f"Error generating keys: {str(e)}", 500
+        logger.error("PGP key generation error: %s", e)
+        return "Error generating PGP keys", 500
 
 @app.route('/pgp/encrypt', methods=['POST'])
 def pgp_encrypt():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    
+
     message = request.form.get('message')
     recipient_email = request.form.get('recipient_email')
-    
+
     try:
         recipient = User.query.filter_by(email=recipient_email).first()
         if not recipient:
             return "Recipient not found", 404
-            
+
         recipient_key = PGPKey.query.filter_by(user_id=recipient.id, active=True).first()
         if not recipient_key:
             return "Recipient has no active PGP key", 400
-            
+
         encrypted = pgp_encrypt_message(message, recipient_key.public_key)
+        # escape() prevents XSS if ciphertext somehow contains HTML-special chars
         return render_template_string(APP_TEMPLATE,
-            content="Encrypted message:<br><textarea readonly>%s</textarea>" % encrypted)
+            content=f"Encrypted message:<br><textarea readonly>{escape(encrypted)}</textarea>")
     except Exception as e:
-        return f"Error encrypting message: {str(e)}", 500
+        logger.error("PGP encrypt error: %s", e)
+        return "Error encrypting message", 500
 
 @app.route('/pgp/decrypt', methods=['POST'])
 def pgp_decrypt():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    
+
     encrypted_message = request.form.get('encrypted_message')
-    
+
     try:
         user_key = PGPKey.query.filter_by(user_id=session['user_id'], active=True).first()
         if not user_key:
             return "No active PGP key found", 400
-            
+
         decrypted = pgp_decrypt_message(encrypted_message, user_key.private_key)
+        # escape() is critical here: decrypted content is user-controlled and must
+        # not be injected raw into the HTML (XSS prevention)
         return render_template_string(APP_TEMPLATE,
-            content="Decrypted message:<br><textarea readonly>%s</textarea>" % decrypted)
+            content=f"Decrypted message:<br><textarea readonly>{escape(decrypted)}</textarea>")
     except Exception as e:
-        return f"Error decrypting message: {str(e)}", 500
+        logger.error("PGP decrypt error: %s", e)
+        return "Error decrypting message", 500
 
 @app.route('/advanced', methods=['GET', 'POST'])
 @jwt_required()
+@csrf.exempt
 def advanced_crypto():
     if request.method == 'POST':
         operation = request.form.get('operation')
